@@ -20,13 +20,57 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(mode) {
+    this.mode = mode
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  switcher(message, key, type) {
+    let shift = 0
+    let result = ''
+    let i = 0
+
+    if (message === undefined || key === undefined) throw new Error("Incorrect arguments!")
+
+    message = message.toLowerCase()
+    key = key.toLowerCase()
+
+    message.split('').map((e) => {
+      if (type) {
+        i >= key.length ? i = 0 : null
+        if (e.charCodeAt() > 96 && e.charCodeAt() < 123) {
+          shift = e.charCodeAt() + (key[i].charCodeAt() - 97)
+          shift >= 123 ? shift = (shift - 123) + 97 : null
+          result += String.fromCharCode(shift)
+          i++
+        } else {
+          result += e
+        }
+      } else {
+        i >= key.length ? i = 0 : null
+        if (e.charCodeAt() > 96 && e.charCodeAt() < 123) {
+          shift = e.charCodeAt() - (key[i].charCodeAt() - 97)
+          shift < 97 ? shift = (shift + 123) - 97 : null
+          result += String.fromCharCode(shift)
+          i++
+        } else {
+          result += e
+        }
+      }
+    })
+    result = this.mode === false ?
+      result.split('').reverse().join('').toUpperCase() :
+      result.toUpperCase()
+    return result
+  }
+
+  encrypt(message, key) {
+    let type = true
+    return this.switcher(message, key, type)
+  }
+
+  decrypt(message, key) {
+    let type = false
+    return this.switcher(message, key, type)
   }
 }
 
